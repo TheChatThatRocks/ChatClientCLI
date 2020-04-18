@@ -9,31 +9,31 @@ import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellMethodAvailability;
 
 @ShellComponent
-public class AuthenticationCommands {
+public class AccountManagementCommands {
     @Autowired
     StateKeeper stateKeeper;
 
     @Autowired
     AsynchronousMessageWriter asynchronousMessageWriter;
 
-    @ShellMethod("Login in the chat service")
+    @ShellMethod("Sign-up in the chat service")
     @ShellMethodAvailability("unauthenticatedMethodsAvailability")
     @SuppressWarnings("unused")
-    public String login(String username, String password) {
-        // TODO: Implement
+    public String signUp(String username, String password) {
+        // TODO: Implement sign-up and login
         stateKeeper.setAuthenticated(true);
         stateKeeper.setUsername(username);
         return "Try to authenticate with: " + username + " " + password;
     }
 
-    @ShellMethod("Logout from the chat service")
+    @ShellMethod("Sign-up in the chat service")
     @ShellMethodAvailability("authenticatedMethodsAvailability")
     @SuppressWarnings("unused")
-    public String logout() {
-        // TODO: Implement
+    public String deleteAccount() {
+        // TODO: Implement sign-up and login
         stateKeeper.setAuthenticated(false);
         stateKeeper.setUsername(null);
-        return "Try to logout";
+        return "Try to delete account";
     }
 
     @SuppressWarnings("unused")

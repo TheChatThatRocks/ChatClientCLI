@@ -12,9 +12,4 @@ public class ChatCliClientApplication {
         SpringApplication.run(ChatCliClientApplication.class, args);
     }
 
-//    @Bean
-//    public PromptProvider myPromptProvider() {
-//        return () -> new AttributedString("my-shell:>", AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW));
-//    }
-
 }
