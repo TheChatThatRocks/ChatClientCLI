@@ -1,7 +1,6 @@
 package com.eina.chat.clientcli.shell;
 
 import com.eina.chat.clientcli.services.StateKeeper;
-import com.eina.chat.clientcli.utils.AsynchronousMessageWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.Availability;
 import org.springframework.shell.standard.ShellComponent;
@@ -12,9 +11,6 @@ import org.springframework.shell.standard.ShellMethodAvailability;
 public class RoomManagementCommands {
     @Autowired
     StateKeeper stateKeeper;
-
-    @Autowired
-    AsynchronousMessageWriter asynchronousMessageWriter;
 
     @ShellMethod("Create a new chat room")
     @SuppressWarnings("unused")
@@ -44,10 +40,38 @@ public class RoomManagementCommands {
         return "Try to create room";
     }
 
+    @ShellMethod("Get rooms that the user administer")
+    @SuppressWarnings("unused")
+    public String getAdministeredRooms() {
+        // TODO: Implement
+        return "Try to get owned rooms";
+    }
+
+    @ShellMethod("Get rooms where the user is member")
+    @SuppressWarnings("unused")
+    public String getJoinedRooms() {
+        // TODO: Implement
+        return "Try to get joined rooms";
+    }
+
+    @ShellMethod("Get messages from room")
+    @SuppressWarnings("unused")
+    public String getMessagesFromRooms(String roomName) {
+        // TODO: Implement wait until messages arrive
+        return "Try to get joined rooms";
+    }
+
+    @ShellMethod("Get files from room")
+    @SuppressWarnings("unused")
+    public String getFilesFromRooms(String roomName) {
+        // TODO: Implement wait until messages arrive
+        return "Try to get joined rooms";
+    }
+
     @ShellMethodAvailability
     @SuppressWarnings("unused")
-    public Availability authenticatedMethodsAvailability() {
-        return stateKeeper.isAuthenticated()
+    public Availability messagingMethodsAvailability() {
+        return stateKeeper.isAuthenticated() && !stateKeeper.isAdmin()
                 ? Availability.available()
                 : Availability.unavailable("you are not authenticated");
     }
