@@ -1,7 +1,9 @@
 package com.eina.chat.clientcli.shell;
 
+import com.eina.chat.clientcli.services.BackEndCommunicator;
 import com.eina.chat.clientcli.services.StateKeeper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.shell.Availability;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
@@ -9,8 +11,23 @@ import org.springframework.shell.standard.ShellMethodAvailability;
 
 @ShellComponent
 public class RoomManagementCommands {
+    /**
+     * Port of the back end
+     */
+    @Value("${app.back-end-api-ws-port:}")
+    private int port;
+
+    /**
+     * Uri of the back end
+     */
+    @Value("${app.back-end-api-ws-uri:}")
+    private String backEndURI;
+
     @Autowired
     StateKeeper stateKeeper;
+
+    @Autowired
+    BackEndCommunicator backEndCommunicator;
 
     @ShellMethod("Create a new chat room")
     @SuppressWarnings("unused")
