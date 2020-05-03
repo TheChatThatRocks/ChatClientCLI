@@ -1,9 +1,6 @@
 package com.eina.chat.clientcli.shell;
 
-import com.eina.chat.backendapi.protocol.packages.message.request.SendFileToRoomCommand;
-import com.eina.chat.backendapi.protocol.packages.message.request.SendFileToUserCommand;
-import com.eina.chat.backendapi.protocol.packages.message.request.SendMessageToRoomCommand;
-import com.eina.chat.backendapi.protocol.packages.message.request.SendMessageToUserCommand;
+import com.eina.chat.backendapi.protocol.packages.message.request.*;
 import com.eina.chat.clientcli.services.BackEndCommunicator;
 import com.eina.chat.clientcli.services.StateKeeper;
 import com.eina.chat.clientcli.utils.FileManagement;
@@ -56,6 +53,18 @@ public class MessagingCommands {
         byte[] fileInBytesWithName = FileManagement.concatenateFileAndName(filename, fileInBytes);
         backEndCommunicator.getSessionUser().send("/app/message",
                 new SendFileToRoomCommand(1, roomName, fileInBytesWithName));
+    }
+
+    @ShellMethod("Get messages from room")
+    @SuppressWarnings("unused")
+    public void getMessagesFromRoom(String roomName) {
+        backEndCommunicator.getSessionUser().send("/app/message", new GetMessageHistoryFromRoomCommand(1, roomName));
+    }
+
+    @ShellMethod("Get files from room")
+    @SuppressWarnings("unused")
+    public void getFilesFromRoom(String roomName) {
+        backEndCommunicator.getSessionUser().send("/app/message", new GetFileHistoryFromRoomCommand(1, roomName));
     }
 
     @ShellMethodAvailability

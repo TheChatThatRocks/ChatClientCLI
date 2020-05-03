@@ -53,21 +53,9 @@ public class RoomManagementCommands {
         backEndCommunicator.getSessionUser().send("/app/message", new GetJoinedRoomsCommand(1));
     }
 
-    @ShellMethod("Get messages from room")
-    @SuppressWarnings("unused")
-    public void getMessagesFromRooms(String roomName) {
-        backEndCommunicator.getSessionUser().send("/app/message", new GetMessageHistoryFromRoomCommand(1, roomName));
-    }
-
-    @ShellMethod("Get files from room")
-    @SuppressWarnings("unused")
-    public void getFilesFromRooms(String roomName) {
-        backEndCommunicator.getSessionUser().send("/app/message", new GetFileHistoryFromRoomCommand(1, roomName));
-    }
-
     @ShellMethodAvailability
     @SuppressWarnings("unused")
-    public Availability messagingMethodsAvailability() {
+    public Availability roomManagementMethodsAvailability() {
         return stateKeeper.isAuthenticated() && !stateKeeper.isAdmin()
                 ? Availability.available()
                 : Availability.unavailable("you are not authenticated");
