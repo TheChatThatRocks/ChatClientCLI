@@ -37,3 +37,8 @@ dependencies {
 test {
     useJUnitPlatform()
 }
+
+bootRun {
+    standardInput = System.in
+}
+

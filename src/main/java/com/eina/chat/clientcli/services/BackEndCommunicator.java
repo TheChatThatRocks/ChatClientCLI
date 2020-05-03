@@ -1,6 +1,8 @@
 package com.eina.chat.clientcli.services;
 
 import com.eina.chat.backendapi.protocol.packages.BasicPackage;
+import com.eina.chat.backendapi.protocol.packages.common.response.OperationFailResponse;
+import com.eina.chat.backendapi.protocol.packages.common.response.OperationSucceedResponse;
 import com.eina.chat.backendapi.protocol.packages.message.response.*;
 import com.eina.chat.backendapi.security.AccessLevels;
 import com.eina.chat.clientcli.utils.AsynchronousMessageWriter;
@@ -52,10 +54,10 @@ public class BackEndCommunicator {
 
             @Override
             public void handleFrame(StompHeaders headers, Object payload) {
-                if (payload instanceof AuthLevelResponse) {
-                    // Set role
-                    stateKeeper.setAdmin(((AuthLevelResponse) payload).getAuthLevel().equals(AccessLevels.ROLE_ADMIN));
-                    asynchronousMessageWriter.println("Auth level: " + ((AuthLevelResponse) payload).getAuthLevel());
+                if (payload instanceof OperationSucceedResponse) {
+                    asynchronousMessageWriter.println("Operation success");
+                } else if (payload instanceof OperationFailResponse) {
+                    asynchronousMessageWriter.println("Operation fail");
                 } else {
                     asynchronousMessageWriter.println("Unidentified type of message received");
                 }
