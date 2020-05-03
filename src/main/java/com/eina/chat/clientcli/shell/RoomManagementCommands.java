@@ -1,9 +1,9 @@
 package com.eina.chat.clientcli.shell;
 
+import com.eina.chat.backendapi.protocol.packages.message.request.*;
 import com.eina.chat.clientcli.services.BackEndCommunicator;
 import com.eina.chat.clientcli.services.StateKeeper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.shell.Availability;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
@@ -11,18 +11,6 @@ import org.springframework.shell.standard.ShellMethodAvailability;
 
 @ShellComponent
 public class RoomManagementCommands {
-    /**
-     * Port of the back end
-     */
-    @Value("${app.back-end-api-ws-port:}")
-    private int port;
-
-    /**
-     * Uri of the back end
-     */
-    @Value("${app.back-end-api-ws-uri:}")
-    private String backEndURI;
-
     @Autowired
     StateKeeper stateKeeper;
 
@@ -31,58 +19,50 @@ public class RoomManagementCommands {
 
     @ShellMethod("Create a new chat room")
     @SuppressWarnings("unused")
-    public String createRoom(String roomName) {
-        // TODO: Implement
-        return "Try to create room";
+    public void createRoom(String roomName) {
+        backEndCommunicator.getSessionUser().send("/app/message", new CreateRoomCommand(1, roomName));
     }
 
     @ShellMethod("Delete the chat room")
     @SuppressWarnings("unused")
-    public String deleteRoom(String roomName) {
-        // TODO: Implement
-        return "Try to delete room";
+    public void deleteRoom(String roomName) {
+        backEndCommunicator.getSessionUser().send("/app/message", new DeleteRoomCommand(1, roomName));
     }
 
     @ShellMethod("Add user to chat room")
     @SuppressWarnings("unused")
-    public String addUserToRoom(String roomName, String username) {
-        // TODO: Implement
-        return "Try to create room";
+    public void addUserToRoom(String roomName, String username) {
+        backEndCommunicator.getSessionUser().send("/app/message", new AddUserToChatRoomCommand(1, username, roomName));
     }
 
     @ShellMethod("Remove user from chat room")
     @SuppressWarnings("unused")
-    public String removeUserFromRoom(String roomName, String username) {
-        // TODO: Implement
-        return "Try to create room";
+    public void removeUserFromRoom(String roomName, String username) {
+        backEndCommunicator.getSessionUser().send("/app/message", new RemoveUserFromChatRoom(1, username, roomName));
     }
 
     @ShellMethod("Get rooms that the user administer")
     @SuppressWarnings("unused")
-    public String getAdministeredRooms() {
-        // TODO: Implement
-        return "Try to get owned rooms";
+    public void getAdministeredRooms() {
+        backEndCommunicator.getSessionUser().send("/app/message", new GetAdministeredRoomsCommand(1));
     }
 
     @ShellMethod("Get rooms where the user is member")
     @SuppressWarnings("unused")
-    public String getJoinedRooms() {
-        // TODO: Implement
-        return "Try to get joined rooms";
+    public void getJoinedRooms() {
+        backEndCommunicator.getSessionUser().send("/app/message", new GetJoinedRoomsCommand(1));
     }
 
     @ShellMethod("Get messages from room")
     @SuppressWarnings("unused")
-    public String getMessagesFromRooms(String roomName) {
-        // TODO: Implement wait until messages arrive
-        return "Try to get joined rooms";
+    public void getMessagesFromRooms(String roomName) {
+        backEndCommunicator.getSessionUser().send("/app/message", new GetMessageHistoryFromRoomCommand(1, roomName));
     }
 
     @ShellMethod("Get files from room")
     @SuppressWarnings("unused")
-    public String getFilesFromRooms(String roomName) {
-        // TODO: Implement wait until messages arrive
-        return "Try to get joined rooms";
+    public void getFilesFromRooms(String roomName) {
+        backEndCommunicator.getSessionUser().send("/app/message", new GetFileHistoryFromRoomCommand(1, roomName));
     }
 
     @ShellMethodAvailability

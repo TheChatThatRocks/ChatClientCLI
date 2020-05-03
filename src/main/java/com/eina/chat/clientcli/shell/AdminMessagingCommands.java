@@ -19,7 +19,7 @@ public class AdminMessagingCommands {
     @ShellMethod("Send message to all users")
     @SuppressWarnings("unused")
     public void sendMessageToAllUser(String message) {
-        backEndCommunicator.getSessionUser().send("/app/message", new SendMessageToAllCommand(1, message));
+        backEndCommunicator.getSessionUser().send("/app/admin", new SendMessageToAllCommand(1, message));
     }
 
     @SuppressWarnings("unused")

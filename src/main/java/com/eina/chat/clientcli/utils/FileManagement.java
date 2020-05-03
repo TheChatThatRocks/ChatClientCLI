@@ -68,4 +68,10 @@ public class FileManagement {
         String fileName = new String(nameBytes);
         return new ImmutablePair<>(fileName, fileContent);
     }
+
+    public static void createFolderIfNotExist(String folderName){
+        File file = new File(folderName);
+        //Creating the directory
+        file.mkdir();
+    }
 }

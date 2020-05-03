@@ -1,8 +1,6 @@
 package com.eina.chat.clientcli.services;
 
 import com.eina.chat.backendapi.protocol.packages.BasicPackage;
-import com.eina.chat.backendapi.protocol.packages.common.response.OperationFailResponse;
-import com.eina.chat.backendapi.protocol.packages.common.response.OperationSucceedResponse;
 import com.eina.chat.backendapi.protocol.packages.message.response.*;
 import com.eina.chat.backendapi.security.AccessLevels;
 import com.eina.chat.clientcli.utils.AsynchronousMessageWriter;
@@ -10,18 +8,27 @@ import com.eina.chat.clientcli.utils.FileManagement;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import org.springframework.messaging.simp.stomp.StompHeaders;
 import org.springframework.messaging.simp.stomp.StompSession;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Type;
+import java.nio.file.Paths;
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Service
 public class BackEndCommunicator {
+    /**
+     * Received files path
+     */
+    @Value("${app.received-files-path:}")
+    private String receivedFilesPath;
+
     @Autowired
     StateKeeper stateKeeper;
 
@@ -60,7 +67,7 @@ public class BackEndCommunicator {
     }
 
     private void subscribeAuthLevelChannels() {
-        this.sessionUser.subscribe("/queue/error/auth-level", this.errorHandler);
+        this.sessionUser.subscribe("/user/queue/error/auth-level", this.errorHandler);
         this.sessionUser.subscribe("/user/queue/auth-level", new StompFrameHandler() {
             @Override
             public Type getPayloadType(StompHeaders headers) {
@@ -117,12 +124,16 @@ public class BackEndCommunicator {
                     String groupName = ((FileFromRoomResponse) payload).getFromRoom();
                     byte[] fileInBytesWithName = ((FileFromRoomResponse) payload).getFile();
                     Pair<String, byte[]> receivedFile = FileManagement.splitFileAndName(fileInBytesWithName);
-                    FileManagement.writeFile(receivedFile.getLeft(), receivedFile.getRight());
+                    FileManagement.createFolderIfNotExist(receivedFilesPath);
+                    String fileName = Instant.now().getEpochSecond() + "_" + receivedFile.getLeft();
+                    String receivedFilePath = Paths.get(receivedFilesPath, fileName).toString();
+
+                    FileManagement.writeFile(receivedFilePath, receivedFile.getRight());
 
                     String response = "New file from group:\n" +
                             "From Group: " + groupName + "\n" +
                             "From User: " + username + "\n" +
-                            "Saved in: " + receivedFile.getLeft();
+                            "Saved in: " + receivedFilePath;
                     asynchronousMessageWriter.println(response);
 
                 } else if (payload instanceof MessageFromRoomResponse) {
@@ -140,11 +151,14 @@ public class BackEndCommunicator {
                     String username = ((FileFromUserResponse) payload).getFrom();
                     byte[] fileInBytesWithName = ((FileFromUserResponse) payload).getFile();
                     Pair<String, byte[]> receivedFile = FileManagement.splitFileAndName(fileInBytesWithName);
-                    FileManagement.writeFile(receivedFile.getLeft(), receivedFile.getRight());
+                    FileManagement.createFolderIfNotExist(receivedFilesPath);
+                    String fileName = Instant.now().getEpochSecond() + "_" + receivedFile.getLeft();
+                    String receivedFilePath = Paths.get(receivedFilesPath, fileName).toString();
+                    FileManagement.writeFile(receivedFilePath, receivedFile.getRight());
 
                     String response = "New file from user:\n" +
                             "From User: " + username + "\n" +
-                            "Saved in: " + receivedFile.getLeft();
+                            "Saved in: " + receivedFilePath;
                     asynchronousMessageWriter.println(response);
 
                 } else if (payload instanceof MessageFromUserResponse) {
@@ -171,11 +185,16 @@ public class BackEndCommunicator {
                     if (groupFilesHistory.isEmpty())
                         response.append("\n").append("Empty");
 
-                    for (Pair<String, byte[]> usernameWithFile : groupFilesHistory) {
+                    FileManagement.createFolderIfNotExist(receivedFilesPath);
+                    String timeNow = String.valueOf(Instant.now().getEpochSecond());
+                    for (int i = 0; i < groupFilesHistory.size(); i++) {
+                        Pair<String, byte[]> usernameWithFile = groupFilesHistory.get(i);
                         String username = usernameWithFile.getLeft();
                         byte[] fileInBytesWithName = usernameWithFile.getRight();
                         Pair<String, byte[]> receivedFile = FileManagement.splitFileAndName(fileInBytesWithName);
-                        FileManagement.writeFile(receivedFile.getLeft(), receivedFile.getRight());
+                        String fileName = timeNow + "_" + i + "_" + receivedFile.getLeft();
+                        String receivedFilePath = Paths.get(receivedFilesPath, fileName).toString();
+                        FileManagement.writeFile(receivedFilePath, receivedFile.getRight());
                         response.append("\n").
                                 append("----------------\n")
                                 .append("From User: ").append(username).append("\n")
@@ -186,19 +205,53 @@ public class BackEndCommunicator {
                     asynchronousMessageWriter.println(response.toString());
 
                 } else if (payload instanceof MessageHistoryFromRoomResponse) {
-                    // TODO:
+                    String roomName = ((MessageHistoryFromRoomResponse) payload).getFromRoom();
+                    StringBuilder response = new StringBuilder("Message history from room:");
+                    response.append("\n").append("From room: ").append(roomName);
+
+                    List<Pair<String, String>> groupMessageHistory = IntStream.range(0,
+                            Math.min(((MessageHistoryFromRoomResponse) payload).getFromUsers().size(),
+                                    ((MessageHistoryFromRoomResponse) payload).getMessages().size()))
+                            .mapToObj(i -> new ImmutablePair<>(((MessageHistoryFromRoomResponse) payload).getFromUsers().get(i),
+                                    ((MessageHistoryFromRoomResponse) payload).getMessages().get(i)))
+                            .collect(Collectors.toList());
+
+                    if (groupMessageHistory.isEmpty())
+                        response.append("\n").append("Empty");
+
+                    for (Pair<String, String> messageAndUser : groupMessageHistory) {
+                        String username = messageAndUser.getLeft();
+                        String message = messageAndUser.getRight();
+
+                        response.append("\n").
+                                append("----------------\n")
+                                .append("From User: ").append(username).append("\n")
+                                .append("Message: ").append(message)
+                                .append("----------------");
+                    }
+
+                    asynchronousMessageWriter.println(response.toString());
+
                 } else if (payload instanceof JoinedRoomsResponse) {
-                    // TODO:
+                    List<String> roomsName = ((JoinedRoomsResponse) payload).getRoomsName();
+                    StringBuilder response = new StringBuilder("Joined rooms:");
+
+                    if (roomsName.isEmpty())
+                        response.append("\n").append("Empty");
+
+                    for (String roomName : roomsName)
+                        response.append("\n").append(roomName);
+
+                    asynchronousMessageWriter.println(response.toString());
                 } else {
                     asynchronousMessageWriter.println("Unidentified type of message received");
                 }
             }
-
         });
     }
 
     private void subscribeAdminChannels() {
-
+        this.sessionUser.subscribe("/user/queue/error/admin", this.errorHandler);
     }
 
     public StompSession getSessionUser() {

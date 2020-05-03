@@ -77,13 +77,13 @@ public class AuthenticationCommands {
         backEndCommunicator.start(sessionUser);
 
         // Get auth level
-        backEndCommunicator.getSessionUser().send("/app/message", new GetAuthLevelCommand(1));
+        backEndCommunicator.getSessionUser().send("/app/auth-level", new GetAuthLevelCommand(1));
     }
 
     @ShellMethod("Get auth level in the chat service")
     @SuppressWarnings("unused")
     public void getAuthLevel() {
-        backEndCommunicator.getSessionUser().send("/app/message", new GetAuthLevelCommand(1));
+        backEndCommunicator.getSessionUser().send("/app/auth-level", new GetAuthLevelCommand(1));
     }
 
     @ShellMethod("Logout from the chat service")
