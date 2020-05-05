@@ -65,7 +65,7 @@ public class AccountManagementCommands {
 
         StompSession session = null;
         try {
-            session = stompClient.connect("ws://" + backEndURI + ":{port}/ws", new WebSocketHttpHeaders(), new StompSessionHandlerAdapter() {
+            session = stompClient.connect(backEndURI, new WebSocketHttpHeaders(), new StompSessionHandlerAdapter() {
             }, this.port).get(2, SECONDS);
         } catch (Exception ignore) {
         }
