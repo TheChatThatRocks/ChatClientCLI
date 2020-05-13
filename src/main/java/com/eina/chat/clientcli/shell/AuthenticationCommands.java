@@ -57,7 +57,7 @@ public class AuthenticationCommands {
         // Connect
         StompSession sessionUser = null;
         try {
-            sessionUser = stompClientUser.connect("ws://" + backEndURI + ":{port}/ws", headersUser,
+            sessionUser = stompClientUser.connect(backEndURI, headersUser,
                     connectHeadersUser1, new StompSessionHandlerAdapter() {
                     }, this.port).get(2, SECONDS);
         } catch (Exception ignore) {
