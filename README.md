@@ -1,4 +1,5 @@
 ### Launch command
 ```bash
-$ ./gradlew bootRun --console=plain
+$ ./gradlew build
+$ java -jar build/libs/clientcli-1.0.1.jar
 ```
