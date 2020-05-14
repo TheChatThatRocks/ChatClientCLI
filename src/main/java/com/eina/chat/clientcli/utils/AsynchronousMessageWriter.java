@@ -14,14 +14,10 @@ public class AsynchronousMessageWriter {
     LineReader lineReader;
 
     public void println(String message) {
-        // TODO: If some command is in the buffer it is cleared
-        //String writeCommand = lineReader.getBuffer().toString();
-        //String line = lineReader.readLine();
         lineReader.callWidget(LineReader.CLEAR);
         lineReader.getTerminal().writer().println(message);
         lineReader.callWidget(LineReader.REDRAW_LINE);
         lineReader.callWidget(LineReader.REDISPLAY);
         lineReader.getTerminal().writer().flush();
-        //lineReader.getTerminal().writer().print(writeCommand);
     }
 }
