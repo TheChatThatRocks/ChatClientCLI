@@ -275,6 +275,6 @@ public class BackEndCommunicator {
     }
 
     public void stop() {
-        sessionUser.disconnect();
+        this.sessionUser.disconnect();
     }
 }

@@ -110,7 +110,7 @@ public class AccountManagementCommands {
             return "Fail when try to sign-up with: " + username + " " + password + ": " + "Timeout";
         }
 
-        return "Successful SignUp with: " + username + " " + password;
+        return "Successful sign-up with: " + username + " " + password;
     }
 
     @ShellMethod("Delete account in the chat service")
