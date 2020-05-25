@@ -105,9 +105,9 @@ public class AccountManagementCommands {
         session.disconnect();
 
         if (failure.get() != null) {
-            return "Fail when try to SignUp with: " + username + " " + password + ": " + failure.get().getMessage();
+            return "Fail when try to sign-up with: " + username + " " + password + ": " + failure.get().getMessage();
         } else if (!hasReceivedMessage) {
-            return "Fail when try to SignUp with: " + username + " " + password + ": " + "Test wasn't completed";
+            return "Fail when try to sign-up with: " + username + " " + password + ": " + "Timeout";
         }
 
         return "Successful SignUp with: " + username + " " + password;
