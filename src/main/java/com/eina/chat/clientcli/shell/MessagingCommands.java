@@ -23,36 +23,59 @@ public class MessagingCommands {
 
     @ShellMethod("Send message to user")
     @SuppressWarnings("unused")
-    public void sendMessageToUser(String username, String message) {
+    public String sendMessageToUser(String username, String message) {
+        if (message.length() > 500)
+            return "Operation fail: Message is too big";
+
         backEndCommunicator.getSessionUser().send("/app/message",
                 new SendMessageToUserCommand(1, username, message));
+        return "";
     }
 
     @ShellMethod("Send message to chat room")
     @SuppressWarnings("unused")
-    public void sendMessageToRoom(String roomName, String message) {
+    public String sendMessageToRoom(String roomName, String message) {
+        if (message.length() > 500)
+            return "Operation fail: Message is too big";
+
         backEndCommunicator.getSessionUser().send("/app/message",
                 new SendMessageToRoomCommand(1, roomName, message));
+
+        return "";
     }
 
     @ShellMethod("Send file to user")
     @SuppressWarnings("unused")
-    public void sendFileToUser(String username, String filePath) {
+    public String sendFileToUser(String username, String filePath) {
         String filename = Paths.get(filePath).getFileName().toString();
         byte[] fileInBytes = FileManagement.readFile(filePath);
+        if (fileInBytes == null)
+            return "Operation fail: File path not exist";
         byte[] fileInBytesWithName = FileManagement.concatenateFileAndName(filename, fileInBytes);
+        if (fileInBytesWithName.length > 1024 * 7)
+            return "Operation fail: File is too big";
+
         backEndCommunicator.getSessionUser().send("/app/message",
                 new SendFileToUserCommand(1, username, fileInBytesWithName));
+
+        return "";
     }
 
     @ShellMethod("Send file to chat room")
     @SuppressWarnings("unused")
-    public void sendFileToRoom(String roomName, String filePath) {
+    public String sendFileToRoom(String roomName, String filePath) {
         String filename = Paths.get(filePath).getFileName().toString();
         byte[] fileInBytes = FileManagement.readFile(filePath);
+        if (fileInBytes == null)
+            return "Operation fail: File path not exist";
+
         byte[] fileInBytesWithName = FileManagement.concatenateFileAndName(filename, fileInBytes);
+        if (fileInBytesWithName.length > 1024 * 7)
+            return "Operation fail: File is too big";
+
         backEndCommunicator.getSessionUser().send("/app/message",
                 new SendFileToRoomCommand(1, roomName, fileInBytesWithName));
+        return "";
     }
 
     @ShellMethod("Get messages from room")

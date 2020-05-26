@@ -18,8 +18,12 @@ public class AdminMessagingCommands {
 
     @ShellMethod("Send message to all users")
     @SuppressWarnings("unused")
-    public void sendMessageToAllUser(String message) {
+    public String sendMessageToAllUser(String message) {
+        if (message.length() > 500)
+            return "Operation fail: Message is too big";
+
         backEndCommunicator.getSessionUser().send("/app/admin", new SendMessageToAllCommand(1, message));
+        return "";
     }
 
     @SuppressWarnings("unused")
