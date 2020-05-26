@@ -4,21 +4,16 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class StateKeeper {
-    private boolean isAuthenticated;
-    private String username;
-    private boolean isAdmin;
-
-    public StateKeeper() {
-        isAuthenticated = false;
-        username = null;
-        isAdmin = false;
-    }
+    private boolean isAuthenticated = false;
+    private String username = null;
+    private boolean isAdmin = false;
 
     public boolean isAuthenticated() {
         return isAuthenticated;
     }
 
     public void setAuthenticated(boolean authenticated) {
+
         isAuthenticated = authenticated;
     }
 

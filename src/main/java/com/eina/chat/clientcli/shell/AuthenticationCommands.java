@@ -97,7 +97,7 @@ public class AuthenticationCommands {
 
     @SuppressWarnings("unused")
     public Availability loginAvailability() {
-        return !stateKeeper.isAuthenticated() && !stateKeeper.isAdmin()
+        return !stateKeeper.isAuthenticated()
                 ? Availability.available()
                 : Availability.unavailable("you are authenticated yet. Please run logout first");
     }
